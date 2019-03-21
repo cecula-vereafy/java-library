@@ -11,5 +11,5 @@ public final class VereafyUtils {
 	public static final String INITIALIZATION_ENDPOINT = BASE_URL+"/twofactor/init";
 	public static final String COMPLETION_ENDPOINT = BASE_URL+"/twofactor/complete";
 	public static final String RESEND_ENDPOINT = BASE_URL+"/twofactor/resend";
-	public static final String GET_BALANCE_ENDPOINT = BASE_URL+"";
+	public static final String GET_BALANCE_ENDPOINT = BASE_URL+"/account/tfabalance";
 }

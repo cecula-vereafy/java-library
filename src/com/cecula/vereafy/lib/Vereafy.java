@@ -7,6 +7,7 @@
 package com.cecula.vereafy.lib;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
@@ -18,6 +19,9 @@ import org.json.JSONObject;
 
 public class Vereafy {
 	Logger logger = Logger.getAnonymousLogger();
+	
+	private static final String GET_METHOD = "GET";
+	private static final String POST_METHOD = "POST";
 
 	private String result;
 
@@ -46,7 +50,7 @@ public class Vereafy {
 			JSONObject initializeJSON = new JSONObject();
 			initializeJSON.put("mobile", mobile);
 
-			returnString = makeRequestToServer(VereafyUtils.INITIALIZATION_ENDPOINT, initializeJSON.toString());
+			returnString = makeRequestToServer(VereafyUtils.INITIALIZATION_ENDPOINT, initializeJSON.toString(),POST_METHOD);
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, "Something went wrong during initialization", e);
 		}
@@ -68,7 +72,7 @@ public class Vereafy {
 			completionJSON.put("token", token);
 			completionJSON.put("pinRef", pinRef);
 
-			returnString = makeRequestToServer(VereafyUtils.COMPLETION_ENDPOINT, completionJSON.toString());
+			returnString = makeRequestToServer(VereafyUtils.COMPLETION_ENDPOINT, completionJSON.toString(),POST_METHOD);
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, "Something went wrong during completion", e);
 		}
@@ -90,7 +94,7 @@ public class Vereafy {
 			resendJSON.put("mobile", mobile);
 			resendJSON.put("pinRef", pinRef);
 
-			returnString = makeRequestToServer(VereafyUtils.RESEND_ENDPOINT, resendJSON.toString());
+			returnString = makeRequestToServer(VereafyUtils.RESEND_ENDPOINT, resendJSON.toString(),POST_METHOD);
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, "Something went wrong during Resending", e);
 		}
@@ -107,34 +111,31 @@ public class Vereafy {
 
 		try {
 
-			JSONObject getBalJSON = new JSONObject();
-			// getBalJSON.put("mobile", mobile);
-			// getBalJSON.put("pinRef", pinRef);
-
-			returnString = makeRequestToServer(VereafyUtils.GET_BALANCE_ENDPOINT, getBalJSON.toString());
+			returnString = makeRequestToServer(VereafyUtils.GET_BALANCE_ENDPOINT, null, GET_METHOD);
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, "Something went wrong while getting balance", e);
 		}
 		return returnString;
 	}
 	
-    /*Here the request to server is made, parameters needed are the url and the parameters to be sent*/
-	private String makeRequestToServer(String url, String jsonParameters) {
+    /*Here the request to server is made, parameters needed are the url, the parameters to be sent and the request method type*/
+	private String makeRequestToServer(String url, String jsonParameters, String requestMethod) {
 
 		try {
 			URL requestUrl = new URL(url);
 
 			conn = (HttpURLConnection) requestUrl.openConnection();
-			conn.setRequestMethod("POST");
+			conn.setRequestMethod(requestMethod);
 			conn.setRequestProperty("Content-Type", "application/json");
 			conn.setRequestProperty("Authorization", "Bearer " + apiKey);
 
 			conn.setDoOutput(true);
-
+			
+			if(requestMethod == "POST") {
 			writer = new OutputStreamWriter(conn.getOutputStream());
-
 			writer.write(jsonParameters);
 			writer.flush();
+			}
 
 			String line;
 			reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
@@ -146,12 +147,27 @@ public class Vereafy {
 			}
 
 			result = resultStringBuilder.toString();
-			writer.close();
-			reader.close();
-
-			//System.out.println(result);
+			
+			
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, "Something went wrong while making request", e);
+		}finally {
+			if(writer != null) {
+				try {
+					writer.close();
+				} catch (IOException e) {
+				
+					logger.log(Level.SEVERE, "Something went wrong while closing output stream writer", e);
+				}
+			}
+			if(reader != null) {
+				try {
+					reader.close();
+				} catch (IOException e) {
+					
+					logger.log(Level.SEVERE, "Something went wrong while closing input stream reader", e);
+				}
+			}
 		}
 
 		return result;

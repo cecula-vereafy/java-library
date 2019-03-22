@@ -2,9 +2,9 @@
 
 - Introduction
 - Initialization
-- Completion:
-- Retry Cases:
-- Get Balance:
+- Completion
+- Resend
+- Get Balance
 ----------
 
 ## Introduction:

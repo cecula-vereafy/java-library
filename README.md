@@ -10,7 +10,7 @@
 
 ## Introduction:
 
-Vereafy is an SMS based 2-factor authentication services that uses machine learning to understand the causes of OTP delivery failures and resolves them instantly to ensure your login and sign up OTPs deliver.
+Vereafy is an SMS based 2-factor authentication service that uses machine learning to understand the causes of OTP delivery failures and resolves them instantly to ensure your login and sign up OTPs deliver.
 
 The Vereafy Java Library Project was created to enable java developers integrate seamlessly with the Vereafy API.
 
